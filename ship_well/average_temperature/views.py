@@ -3,50 +3,112 @@ from .business_logic import (
     get_average_temperature,
     get_valid_sources,
     get_coordinates_from_zip_code,
-    validate_coordinates
+    validate_coordinates,
+    TemperatureAverageException,
+    ServiceConnectionError,
+    ServiceUnexpectedResponse,
+
 )
 
-from .business_logic.exceptions import TemperatureAverageException
 
+def _handle_average_temperature_by_coordinates(latitude, longitude, filters, validate=True):
+    if validate:
+        try:
+            are_valid = validate_coordinates(latitude, longitude)
+        except ServiceConnectionError:
+            return JsonResponse(
+                {'error': 'Can not connect to the underlying services to validate the coordinates'},
+                status=500
+            )
+        except ServiceUnexpectedResponse:
+            return JsonResponse(
+                {'error': 'Could not validate the coordinates ({}, {})'.format(latitude, longitude)},
+                status=500
+            )
+        else:
+            if not are_valid:
+                return JsonResponse(
+                    {'error': 'The specified coordinates are invalid ({}, {})'.format(latitude, longitude)},
+                    status=400
+                )
+
+    try:
+        average_weather = get_average_temperature(latitude, longitude, filters)
+        return JsonResponse({'celsius': average_weather})
+    except TemperatureAverageException:
+        return JsonResponse(
+            {'error': 'Could not retrieve current temperature for location ({}, {})'.format(latitude, longitude)},
+            status=500
+        )
+
+
+def _handle_average_temperature_by_zip_code(zip_code, filters):
+    try:
+        coords = get_coordinates_from_zip_code(zip_code)
+    except ServiceConnectionError:
+        return JsonResponse(
+            {'error': 'Can not connect to the underlying services to translate the zip code into coordinates'},
+            status=500
+        )
+    except ServiceUnexpectedResponse:
+        return JsonResponse(
+            {'error': 'Could not get the location for zip_code {}'.format(zip_code)},
+            status=500
+        )
+    else:
+        if coords is None:
+            return JsonResponse(
+                {'error': 'The specified zip_code is invalid: {}'.format(zip_code)},
+                status=400
+            )
+        latitude, longitude = coords
+        return _handle_average_temperature_by_coordinates(latitude, longitude, filters, validate=False)
 
 
 def average_temperature(request):
     """
+    Retrieve the current temperature at a given location as an average of several sources.
 
-    :param request:
-    :return:
+    The query params accepted are the following:
+     * zip_code: the zip_code of the desired location
+     * latitude: the latitude coordinate of the desired location
+     * longitude: the longitude coordinate of the desired location
+     * filters: the list of sources to consider. The allowed are:
+       - noaa
+       - accuweather
+       - weather.com
+
+    *Note*: - if zip_code param is present, latitude and longitud params are ignored.
+            - if filters param is not present, all the sources are considered
     """
-    latitude = request.GET.get('latitude')
-    longitude = request.GET.get('longitude')
-    zip_code = request.GET.get('zip_code')
-
-    if zip_code:
-        print(get_coordinates_from_zip_code(zip_code))
-
-    if not latitude or not longitude:
-        return JsonResponse({'error': 'latitude and/or longitud params are missing'}, status=400)
-
-    try:
-        latitude = float(latitude)
-        longitude = float(longitude)
-    except ValueError:
-        return JsonResponse({'error': 'latitude and longitude must be numeric values'}, status=400)
+    # check filters are valid
     filters = request.GET.getlist('filters')
-    print(filters)
     if filters:
         missing_sources = set(filters) - set(get_valid_sources())
         if missing_sources:
             return JsonResponse(
-                {'error': 'The following filters provided are invalid: {}'.format(missing_sources)},
+                {'error': 'The following provided filters are no valid: {}'.format(missing_sources)},
                 status=400
             )
 
-    try:
-        average_weather = get_average_temperature(latitude, longitude, filters)
-    except TemperatureAverageException:
-        return JsonResponse(
-            {'error': 'Could not fetch current temperature'},
-            status=500
-        )
+    zip_code = request.GET.get('zip_code')
+    if zip_code:
+        return _handle_average_temperature_by_zip_code(zip_code, filters)
     else:
-        return JsonResponse({'celsius': average_weather})
+        latitude = request.GET.get('latitude')
+        longitude = request.GET.get('longitude')
+
+        if not latitude or not longitude:
+            return JsonResponse({'error': 'latitude and/or longitud params are missing and zip_code is missing also'},
+                                status=400)
+
+        try:
+            latitude = float(latitude)
+            longitude = float(longitude)
+        except ValueError:
+            raise
+            print(latitude)
+            print(longitude)
+            return JsonResponse({'error': 'latitude and longitude must be numeric values'}, status=400)
+        else:
+            return _handle_average_temperature_by_coordinates(latitude, longitude, filters, True)

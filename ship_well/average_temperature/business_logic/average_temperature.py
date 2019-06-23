@@ -5,14 +5,7 @@ It abstracts all the internals.
 from typing import List
 from statistics import mean
 
-from .temperature_source import WEATHER_SOURCE
-
-# This imports are needed to register weather sources
-from .temperature_source import (  # noqa: F401
-    accuweather,
-    noaa,
-    weatherdotcom,
-)
+from .temperature_source.sources import WebAppTemperatureSource, WEATHER_SOURCE
 
 
 def get_average_temperature(latitude: float, longitude: float, filter_: List[str] = None) -> float:
@@ -39,7 +32,7 @@ def get_average_temperature(latitude: float, longitude: float, filter_: List[str
         desired_sources = WEATHER_SOURCE
 
     all_weathers = [
-        weather_func(latitude, longitude)
+        WebAppTemperatureSource.from_source_name(source).get_current_temperature(latitude, longitude)
         for source, weather_func in desired_sources.items()
     ]
 

@@ -2,44 +2,37 @@
 This module defines all the exceptions that are being raised by this package
 """
 
-from ..exceptions import TemperatureAverageException
+from ..exceptions import (
+    TemperatureAverageException,
+    ServiceUnexpectedResponse,
+    ServiceConnectionError,
+    ServiceUnexpectedStatusCode,
+)
 
 
-class WeatherSourceException(TemperatureAverageException):
+class TemperatureSourceException(TemperatureAverageException):
     """
     This is the base exception class for all weather source package
     """
     pass
 
 
-class AccuweatherInvalidRequest(WeatherSourceException):
+class TemperatureSourceConnectionError(TemperatureSourceException, ServiceConnectionError):
     """
-    This exception is raised when accuweather response's status code is different than success
-    """
-    pass
-
-
-class AccuweatherUnexpectedResponse(TemperatureAverageException):
-    """
-    This exception is raised when accuweather response's status code is success, but the json content is unexpected
-    and can't be parsed successfully.
+    This exception is raised when there are connection issues
     """
     pass
 
 
-class NoaaInvalidRequest(WeatherSourceException):
+class TemperatureSourceUnexpectedResponse(TemperatureSourceException, ServiceUnexpectedResponse):
     """
-    This exception is raised when noaa response's status code is different than success
-    """
-    pass
-
-
-class WeatherDotComInvalidRequest(WeatherSourceException):
-    """
-    This exception is raised when weather.com response's status code is different than success
+    This exception is raised when the response can not be parsed successfully
     """
     pass
 
 
-class WeatherDotComUnexpectedResponse(WeatherSourceException):
+class TemperatureSourceUnexpectedStatusCode(TemperatureSourceException, ServiceUnexpectedStatusCode):
+    """
+    This exception is raised when the response HTTP_ERROR_CODE is unexpected
+    """
     pass

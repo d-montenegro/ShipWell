@@ -7,8 +7,13 @@ import logging
 from typing import Tuple
 
 import requests
+from requests.exceptions import ConnectionError
 
-from .exceptions import GeoCodeException
+from .exceptions import (
+    GoogleAPIConnectionError,
+    GoogleAPIUnexpectedResponse,
+    GoogleAPIUnexpectedStatusCode,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -21,6 +26,7 @@ class GoogleApiClient:
 
     GOOGLE_MAPS_API_URL = 'https://maps.googleapis.com/maps/api/geocode/json'
     STATUS_CODE_SUCCESS = 200
+    STATUS_OK = "OK"
 
     def __init__(self, api_key: str):
         """
@@ -33,7 +39,8 @@ class GoogleApiClient:
         Get latitude - longitude coordinates from zip code
 
         :param zip_code: the desired zip code
-        :return: the latitude - longitude coordinates that corresponds to the given zip code
+        :return: the latitude - longitude coordinates that corresponds to the given zip code, or None
+        if there's no location for the given zip code
         :raises GeoCodeException if the coordinates can't be retrieved
         """
         payload = {
@@ -41,15 +48,16 @@ class GoogleApiClient:
             "components": 'postal_code:{}'.format(zip_code)
         }
 
-        response = requests.get(self.GOOGLE_MAPS_API_URL, params=payload)
+        response = self._get(payload)
+
         if response.status_code == self.STATUS_CODE_SUCCESS:
             json_response = response.json()
             results = json_response['results']
-            if len(results) != 1:
-                logger.error('Could find a single result for postal code %s. Response: %s'.format(
+            if len(results) == 0:
+                logger.error('Could find a unique result for postal code %s. Response: %s'.format(
                     zip_code, response.text
                 ))
-                raise GeoCodeException('Could not retrieve a unique coordinates')
+                return None  # the zip code is not valid
             else:
                 result = results[0]
                 location = result['geometry']['location']
@@ -57,26 +65,50 @@ class GoogleApiClient:
         else:
             logger.error('Failed to retrieve location from postal code. '
                          'Status code: {r.status_code} - text: {r.text}'.format(r=response))
-            raise GeoCodeException("Could not retrieve location")
+            raise GoogleAPIUnexpectedStatusCode(response)
 
-    def validate_coordinates(self, latitude: float, longitude: float) -> bool:
+    def check_coordinates_validity(self, latitude: float, longitude: float) -> bool:
         """
         Check latitude and longitude coordinates are valid
 
         :param latitude: the desired latitude
         :param longitude: the desired longitude
-        :return: True if the coordinates are valid. False otherwise.
+        :return True if coordinates are valid. False otherwise
+
+        :raises GeoCodeServiceUnexpectedResponse on communication issues
         """
         payload = {
             "key": self.key,
             "latlng": ','.join([str(latitude), str(longitude)])
         }
 
-        response = requests.get('https://maps.googleapis.com/maps/api/geocode/json?', params=payload)
+        response = self._get(payload)
+
         if response.status_code == self.STATUS_CODE_SUCCESS:
             json_response = response.json()
+            status = json_response['status']
+            if status != self.STATUS_OK:
+                logger.error("Google Maps API is not available by the moment. Respose %s", json_response)
+                raise GoogleAPIUnexpectedResponse(json_response,
+                                                  'The status reported by google API is {}'.format(status))
+
             results = json_response['results']
-            return len(results) == 1
+            return len(results) != 0
+
         else:
-            logger.warning('Failed to validate coordinates: lat {} - long: {}'.format(latitude, longitude))
-            return False
+            logger.error('Failed to retrieve location from postal code. '
+                         'Status code: {r.status_code} - text: {r.text}'.format(r=response))
+            raise GoogleAPIUnexpectedStatusCode(response)
+
+    def _get(self, payload: dict):
+        """
+        Perform a GET on Google Maps API
+
+        :param payload: the query
+        :return: the corresponding response
+        :raises GeoCodeServiceConnectionError on connection errors
+        """
+        try:
+            return requests.get(self.GOOGLE_MAPS_API_URL, params=payload)
+        except ConnectionError:
+            raise GoogleAPIConnectionError('Google Maps API is down')

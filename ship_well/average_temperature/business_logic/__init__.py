@@ -7,3 +7,10 @@ from .geolocation import (  # noqa: F401
     validate_coordinates,
     get_coordinates_from_zip_code,
 )
+
+from .exceptions import (  # noqa: F401
+    TemperatureAverageException,
+    ServiceConnectionError,
+    ServiceUnexpectedStatusCode,
+    ServiceUnexpectedResponse,
+)

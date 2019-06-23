@@ -17,7 +17,7 @@ def validate_coordinates(latitude: float, longitude: float) -> bool:
     :return: True if the coordinates are valid. False otherwise
     """
     geocode = GoogleApiClient(GOOGLE_MAPS_API_KEY)
-    return geocode.validate_coordinates(latitude, longitude)
+    return geocode.check_coordinates_validity(latitude, longitude)
 
 
 def get_coordinates_from_zip_code(zip_code: str) -> Tuple[float, float]:
@@ -25,7 +25,7 @@ def get_coordinates_from_zip_code(zip_code: str) -> Tuple[float, float]:
     Get the coordinates of a location given its zip_code
 
     :param zip_code: the desired zip_code
-    :return: the tuple latitude - longitude
+    :return: the tuple latitude - longitude, or None if the zip_code is invalid
     :raises TemperatureAverageException if translation fails
     """
     geocode = GoogleApiClient(GOOGLE_MAPS_API_KEY)
