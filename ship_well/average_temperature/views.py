@@ -119,7 +119,7 @@ def average_temperature(request):
     if zip_code:
         if GOOGLE_MAPS_API_KEY is None:
             return JsonResponse(
-                {'error': 'There is not GOOGLE API Configured.'}, status=500
+                {'error': 'Google API Key not configured.'}, status=500
             )
 
         return _handle_average_temperature_by_zip_code(zip_code, filters)
