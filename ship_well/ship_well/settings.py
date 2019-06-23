@@ -47,5 +47,12 @@ USE_L10N = True
 
 USE_TZ = True
 
+# This project uses Google Maps API with two purposes:
+# 1. Translating zip codes into latitude - longitude coordinates
+# 2. Checking that given latitude, longitude pair is valid
+# To use that API, you must set the corresponding API KEY
+# See https://developers.google.com/maps/documentation/geocoding/intro for details
+GOOGLE_MAPS_API_KEY = "YOUR API KEY"
 
-GOOGLE_MAPS_API_KEY = "YOUR KEY HERE"
+# By default, coordinates checking is disabled. You can enable it by setting this flag to True
+ENABLE_COORDINATES_CHECKING = False

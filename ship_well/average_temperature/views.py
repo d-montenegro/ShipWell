@@ -1,6 +1,8 @@
 from typing import List
 
 from django.http import JsonResponse
+
+from ship_well.settings import ENABLE_COORDINATES_CHECKING
 from .business_logic import (
     get_average_temperature,
     get_valid_sources,
@@ -131,4 +133,5 @@ def average_temperature(request):
         except ValueError:
             return JsonResponse({'error': 'latitude and longitude must be numeric values'}, status=400)
         else:
-            return _handle_average_temperature_by_coordinates(latitude, longitude, filters, False)
+            return _handle_average_temperature_by_coordinates(latitude, longitude, filters,
+                                                              validate=ENABLE_COORDINATES_CHECKING)
