@@ -82,7 +82,7 @@ class WebAppTemperatureSource(ABC):
     @classmethod
     def from_source_name(cls, source_name: str):
         """
-        Factory to instantiate the corresponding subclass by its identifier
+        Factory to get the corresponding subclass by its identifier
 
         :param source_name: the desired source
         :return: the corresponding class
