@@ -42,7 +42,7 @@ class WebAppTemperatureSource(ABC):
     @classmethod
     def get_current_temperature(cls, latitude: float, longitude: float) -> float:
         """
-        Get the current temperature in celsius grades
+        Get the current temperature in celsius degrees
 
         This method uses the implementation of the abstract methods to actually perform a request an obtain from
         its response the current temperature
@@ -110,7 +110,7 @@ class WebAppTemperatureSource(ABC):
         """
         This method must extract the current temperature from the response
         :param response: the HTTP response
-        :return: the curent temperature in celsius grades
+        :return: the curent temperature in celsius degrees
         :raises TemperatureSourceException on parsing errors
         """
         pass
@@ -158,7 +158,7 @@ class NoaaTemperatureSource(WebAppTemperatureSource):
         }
 
         :param response: the json response from noaa
-        :return: the current temperature in celsius grades
+        :return: the current temperature in celsius degrees
         """
         current_weather = response.json()['today']['current']
         return float(current_weather["celsius"])
@@ -219,7 +219,7 @@ class AccuweatherTemperatureSource(WebAppTemperatureSource):
         }
 
         :param response: the response from accuweather
-        :return: the current temperature in celsius grades
+        :return: the current temperature in celsius degrees
         :raises TemperatureSourceUnexpectedResponse if the response can't be parsed successfully
         """
         json_response = response.json()
@@ -302,7 +302,7 @@ class WeatherDotComTemperatureSource(WebAppTemperatureSource):
             }
         }
         :param response: the response from weather.com
-        :return: the current temperature in celsius grades
+        :return: the current temperature in celsius degrees
         :raises TemperatureSourceUnexpectedResponse if the response can't be parsed
         """
         # success

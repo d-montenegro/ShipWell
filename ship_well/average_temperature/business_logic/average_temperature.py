@@ -13,7 +13,7 @@ def get_average_temperature(latitude: float, longitude: float, filter_: List[str
     Retrieve current temperature as an average from several sources
 
     All the available sources are queried to retrieve the current temperature in
-    celsius grades. Sources can be filtered, but note the following:
+    celsius degrees. Sources can be filtered, but note the following:
      - If no filter is provided, all the sources are queried.
      - If a value in the filter doesn't match an existing filter, it's ignored.
 
