@@ -5,7 +5,7 @@ A toy Django app that exposes and endpoint to get the current temperature from a
 ## Using ShipWell
 ### Prerequisites
 
- 1. Docker to build & run the repositories.
+ Docker to build & run the repositories.
 
 ### Installation
 To install from source, you have to clone the repository, and the use docker to build an image and run it.
@@ -18,7 +18,7 @@ make build run
 This will start the application and keep it running on _localhost:8000_. You can stop it by hitting CTRL+C.
 
 ### Usage
-This application exposes the single endpoint _average_temperature_, to consult the current temperature on a given location. It retrieves the current temperature from multiple sources and serves the average.
+This application exposes the single endpoint _average_temperature_, to consult the current temperature on a given location in celsius degrees. It retrieves the current temperature from multiple sources and serves the average.
 
 It accepts the following parameters:
  * _zip_code_: this allows to refer to a location by a zip code
