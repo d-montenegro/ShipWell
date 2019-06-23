@@ -1,3 +1,5 @@
+from typing import List
+
 from django.http import JsonResponse
 from .business_logic import (
     get_average_temperature,
@@ -11,7 +13,20 @@ from .business_logic import (
 )
 
 
-def _handle_average_temperature_by_coordinates(latitude, longitude, filters, validate=True):
+def _handle_average_temperature_by_coordinates(
+        latitude: float, longitude: float, filters: List[str] = None, validate: bool = True):
+    """
+    Builds a response with the average temperature for a given location
+
+    Since coordinate validation depends on an external source, availability can't be guaranteed, so the validate
+    flag can be used to disable it.
+
+    :param latitude: the desired latitude
+    :param longitude: the desired longitude
+    :param filters: an optional list of the sources to consider
+    :param validate: weather validate or the coordinates
+    :return: the corresponding response
+    """
     if validate:
         try:
             are_valid = validate_coordinates(latitude, longitude)
@@ -42,7 +57,14 @@ def _handle_average_temperature_by_coordinates(latitude, longitude, filters, val
         )
 
 
-def _handle_average_temperature_by_zip_code(zip_code, filters):
+def _handle_average_temperature_by_zip_code(zip_code: str, filters: List[str] = None):
+    """
+    Builds a response with the average temperature for a given location
+
+    :param zip_code: the desired zip_code
+    :param filters: an optional list of the sources to consider
+    :return: the corresponding response
+    """
     try:
         coords = get_coordinates_from_zip_code(zip_code)
     except ServiceConnectionError:
@@ -78,7 +100,7 @@ def average_temperature(request):
        - accuweather
        - weather.com
 
-    *Note*: - if zip_code param is present, latitude and longitud params are ignored.
+    *Note*: - if zip_code param is present, latitude and longitude params are ignored.
             - if filters param is not present, all the sources are considered
     """
     # check filters are valid
@@ -106,9 +128,6 @@ def average_temperature(request):
             latitude = float(latitude)
             longitude = float(longitude)
         except ValueError:
-            raise
-            print(latitude)
-            print(longitude)
             return JsonResponse({'error': 'latitude and longitude must be numeric values'}, status=400)
         else:
             return _handle_average_temperature_by_coordinates(latitude, longitude, filters, True)
