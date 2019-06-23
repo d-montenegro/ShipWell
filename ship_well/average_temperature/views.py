@@ -121,7 +121,8 @@ def average_temperature(request):
         longitude = request.GET.get('longitude')
 
         if not latitude or not longitude:
-            return JsonResponse({'error': 'latitude and/or longitud params are missing and zip_code is missing also'},
+            return JsonResponse({'error': 'latitude and/or longitude params are missing and '
+                                          'zip_code is missing as well'},
                                 status=400)
 
         try:
@@ -130,4 +131,4 @@ def average_temperature(request):
         except ValueError:
             return JsonResponse({'error': 'latitude and longitude must be numeric values'}, status=400)
         else:
-            return _handle_average_temperature_by_coordinates(latitude, longitude, filters, True)
+            return _handle_average_temperature_by_coordinates(latitude, longitude, filters, False)
