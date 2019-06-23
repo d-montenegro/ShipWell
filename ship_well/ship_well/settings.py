@@ -52,7 +52,7 @@ USE_TZ = True
 # 2. Checking that given latitude, longitude pair is valid
 # To use that API, you must set the corresponding API KEY
 # See https://developers.google.com/maps/documentation/geocoding/intro for details
-GOOGLE_MAPS_API_KEY = "YOUR API KEY"
+GOOGLE_MAPS_API_KEY = None  # SET API KEY HERE
 
 # By default, coordinates checking is disabled. You can enable it by setting this flag to True
 ENABLE_COORDINATES_CHECKING = False

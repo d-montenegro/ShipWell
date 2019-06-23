@@ -2,7 +2,7 @@ from typing import List
 
 from django.http import JsonResponse
 
-from ship_well.settings import ENABLE_COORDINATES_CHECKING
+from ship_well.settings import ENABLE_COORDINATES_CHECKING, GOOGLE_MAPS_API_KEY
 from .business_logic import (
     get_average_temperature,
     get_valid_sources,
@@ -117,6 +117,11 @@ def average_temperature(request):
 
     zip_code = request.GET.get('zip_code')
     if zip_code:
+        if GOOGLE_MAPS_API_KEY is None:
+            return JsonResponse(
+                {'error': 'There is not GOOGLE API Configured.'}, status=500
+            )
+
         return _handle_average_temperature_by_zip_code(zip_code, filters)
     else:
         latitude = request.GET.get('latitude')
