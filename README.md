@@ -42,3 +42,5 @@ Response:
 ```json
 {"celsius": 12.0}
 ```
+### Disclaimer
+Currently, there are not unit tests implemented for this project. Implementing them is prioritary and must be the following task.
