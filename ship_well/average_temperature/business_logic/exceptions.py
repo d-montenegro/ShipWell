@@ -1,0 +1,2 @@
+class WeatherAverageException(Exception):
+    pass
