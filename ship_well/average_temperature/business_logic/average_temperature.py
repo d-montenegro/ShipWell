@@ -52,4 +52,3 @@ def get_valid_sources() -> List[str]:
     :return: a list of valid source names
     """
     return WEATHER_SOURCE.keys()
-
