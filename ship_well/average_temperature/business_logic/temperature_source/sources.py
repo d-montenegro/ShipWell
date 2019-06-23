@@ -59,6 +59,7 @@ class WebAppTemperatureSource(ABC):
             response = func(cls.BASE_URL, **payload)
         except ConnectionError:
             # Could not get to the source
+            logger.exception('Could not connect to %s', cls.ID)
             raise TemperatureSourceConnectionError('Could not connect to source {}'.format(cls.ID))
         else:
             # check if the http status code is one of the expected, parse the response

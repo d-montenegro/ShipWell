@@ -120,6 +120,6 @@ class GoogleApiClient:
         """
         status = json_response['status']
         if status != cls.STATUS_OK:
-            logger.error("Google Maps API is not available by the moment. Response %s", json_response)
+            logger.error("Google Maps API is not available by the moment. Response: %s", json_response)
             raise GoogleAPIUnexpectedResponse(json_response,
                                               'The status reported by google API is {}'.format(status))
