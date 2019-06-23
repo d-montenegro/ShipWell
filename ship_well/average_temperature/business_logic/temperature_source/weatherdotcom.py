@@ -38,7 +38,6 @@ def get_current_temperature(latitude, longitude):
     }
     weatherdotcom_url = urljoin(MOCK_API_URL, 'weatherdotcom')
     response = requests.post(weatherdotcom_url, json=payload)
-    print(response.json())
     if response.status_code == STATUS_CODE_SUCCESS:
         return _retrieve_current_weather(response.json())
     else:

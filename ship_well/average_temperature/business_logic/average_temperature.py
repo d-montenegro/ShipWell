@@ -2,10 +2,12 @@
 This module exposes a single function to get the current temperate as an average from several sources.
 It abstracts all the internals.
 """
+from typing import List
 from statistics import mean
+
 from .temperature_source import WEATHER_SOURCE
 
-# This imports are needed to register weather sources.
+# This imports are needed to register weather sources
 from .temperature_source import (  # noqa: F401
     accuweather,
     noaa,
@@ -13,7 +15,7 @@ from .temperature_source import (  # noqa: F401
 )
 
 
-def get_average_temperature(latitude: float, longitude: float, filter_: list = None) -> float:
+def get_average_temperature(latitude: float, longitude: float, filter_: List[str] = None) -> float:
     """
     Retrieve current temperature as an average from several sources
 
@@ -42,3 +44,12 @@ def get_average_temperature(latitude: float, longitude: float, filter_: list = N
     ]
 
     return mean(all_weathers)
+
+
+def get_valid_sources() -> List[str]:
+    """
+    Return all valid sources for requesting current temperature
+    :return: a list of valid source names
+    """
+    return WEATHER_SOURCE.keys()
+

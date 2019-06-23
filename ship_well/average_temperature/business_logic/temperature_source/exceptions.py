@@ -2,10 +2,10 @@
 This module defines all the exceptions that are being raised by this package
 """
 
-from ..exceptions import WeatherAverageException
+from ..exceptions import TemperatureAverageException
 
 
-class WeatherSourceException(WeatherAverageException):
+class WeatherSourceException(TemperatureAverageException):
     """
     This is the base exception class for all weather source package
     """
@@ -19,7 +19,7 @@ class AccuweatherInvalidRequest(WeatherSourceException):
     pass
 
 
-class AccuweatherUnexpectedResponse(WeatherAverageException):
+class AccuweatherUnexpectedResponse(TemperatureAverageException):
     """
     This exception is raised when accuweather response's status code is success, but the json content is unexpected
     and can't be parsed successfully.

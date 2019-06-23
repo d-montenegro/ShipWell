@@ -47,3 +47,5 @@ USE_L10N = True
 
 USE_TZ = True
 
+
+GOOGLE_MAPS_API_KEY = "YOUR KEY HERE"

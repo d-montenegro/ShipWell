@@ -16,5 +16,5 @@ Including another URLconf
 from django.urls import include, path
 
 urlpatterns = [
-    path('average_temperature/', include('average_temperature.urls')),
+    path('average_temperature', include('average_temperature.urls')),
 ]
