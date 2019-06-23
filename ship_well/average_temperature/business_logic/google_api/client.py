@@ -52,9 +52,11 @@ class GoogleApiClient:
 
         if response.status_code == self.STATUS_CODE_SUCCESS:
             json_response = response.json()
+            self._verify_status(json_response)
+
             results = json_response['results']
             if len(results) == 0:
-                logger.error('Could find a unique result for postal code %s. Response: %s'.format(
+                logger.error('There are not results for the zip code {}. Response: {}'.format(
                     zip_code, response.text
                 ))
                 return None  # the zip code is not valid
@@ -86,12 +88,7 @@ class GoogleApiClient:
 
         if response.status_code == self.STATUS_CODE_SUCCESS:
             json_response = response.json()
-            status = json_response['status']
-            if status != self.STATUS_OK:
-                logger.error("Google Maps API is not available by the moment. Respose %s", json_response)
-                raise GoogleAPIUnexpectedResponse(json_response,
-                                                  'The status reported by google API is {}'.format(status))
-
+            self._verify_status(json_response)
             results = json_response['results']
             return len(results) != 0
 
@@ -112,3 +109,17 @@ class GoogleApiClient:
             return requests.get(self.GOOGLE_MAPS_API_URL, params=payload)
         except ConnectionError:
             raise GoogleAPIConnectionError('Google Maps API is down')
+
+    @classmethod
+    def _verify_status(cls, json_response: dict) -> None:
+        """
+        Check status code if "OK" in the api's json response
+
+        :param json_response: api's json response
+        :raise GoogleAPIUnexpectedResponse if the status is not "OK"
+        """
+        status = json_response['status']
+        if status != cls.STATUS_OK:
+            logger.error("Google Maps API is not available by the moment. Response %s", json_response)
+            raise GoogleAPIUnexpectedResponse(json_response,
+                                              'The status reported by google API is {}'.format(status))
