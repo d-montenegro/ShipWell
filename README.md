@@ -44,3 +44,6 @@ Response:
 ```
 ### Disclaimer
 Currently, there are not unit tests implemented for this project. Implementing them is prioritary and must be the following task.
+
+### Optimization
+This project can be optimized to perform the requests to external resources concurrently. This can be achieved with low effort using asyncio. This is specially important if the number a external sources to communicate with grows.
