@@ -33,8 +33,7 @@ It accepts the following parameters:
 make build run
 ```
 ### Example
-Get the current temperature from latitude, longitude 40.714224,-73.961452, from AccuWeather.
- Request:
+To get the current temperature from latitude, longitude 40.714224,-73.961452, from AccuWeather, enter the following URL in your web browser:
  ```bash
  http://127.0.0.1:8000/average_temperature?latitude=40.7142240&longitude=-73.961452&filters=accuweather
 ```
