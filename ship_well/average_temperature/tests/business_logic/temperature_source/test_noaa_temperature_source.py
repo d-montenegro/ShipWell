@@ -10,12 +10,12 @@ from average_temperature.business_logic.temperature_source.exceptions import (
 )
 
 
-def test_temperature_successfully_retrieved(requests_mock):
+def test_temperature_successfully_retrieved(requests_mock_get):
     """
     Check that the request to Noaa service is properly build and the current temperature
     is successfully retrieved
     """
-    get, response = requests_mock
+    get, response = requests_mock_get
     response.status_code = 200
     response.json = lambda: {
         'today': {
@@ -44,11 +44,11 @@ def test_temperature_successfully_retrieved(requests_mock):
 
 
 @mark.parametrize('status_code', [500, 400, 404])
-def test_unexpected_status_code(requests_mock, status_code):
+def test_unexpected_status_code(requests_mock_get, status_code):
     """
     Check that the corresponding exception is raised if the status code in the response is unexpected
     """
-    _, response = requests_mock
+    _, response = requests_mock_get
     response.status_code = status_code
     response.text = 'This is a dummy text'
 
@@ -66,11 +66,11 @@ def test_unexpected_status_code(requests_mock, status_code):
     {'today': {'for', 'bar'}},  # missing 'current' key
     {'today': {'current': {'foo': 'bar'}}},  # missing 'celcius' key
 ])
-def test_unexpected_response(requests_mock, invalid_response):
+def test_unexpected_response(requests_mock_get, invalid_response):
     """
     Check that the corresponding exception is raised if the response body is unexpected
     """
-    _, response = requests_mock
+    _, response = requests_mock_get
     response.status_code = 200
     response.json = lambda: invalid_response
 

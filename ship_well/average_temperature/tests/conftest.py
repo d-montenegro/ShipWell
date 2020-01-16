@@ -5,7 +5,7 @@ from pytest import fixture
 
 
 @fixture
-def requests_mock(monkeypatch):
+def requests_mock_get(monkeypatch):
     response = MagicMock()
     get = MagicMock(return_value=response)
     monkeypatch.setattr(requests, "get", get)
