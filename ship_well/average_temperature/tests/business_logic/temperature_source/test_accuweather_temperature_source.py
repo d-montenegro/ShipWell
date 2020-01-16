@@ -12,7 +12,7 @@ from average_temperature.business_logic.temperature_source.exceptions import (
 
 def test_temperature_successfully_retrieved(requests_mock_get):
     """
-    Check that the request to Noaa service is properly build and the current temperature
+    Check that the request to Accuweather service is properly build and the current temperature
     is successfully retrieved
     """
     get, response = requests_mock_get
