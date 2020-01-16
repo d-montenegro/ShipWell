@@ -1,8 +1,4 @@
-import requests
-from unittest.mock import MagicMock
-
 from pytest import (
-    fixture,
     mark,
     raises,
 )
@@ -12,14 +8,6 @@ from average_temperature.business_logic.temperature_source.exceptions import (
     TemperatureSourceUnexpectedStatusCode,
     TemperatureSourceException,
 )
-
-
-@fixture
-def requests_mock(monkeypatch):
-    response = MagicMock()
-    get = MagicMock(return_value=response)
-    monkeypatch.setattr(requests, "get", get)
-    return get, response
 
 
 def test_temperature_successfully_retrieved(requests_mock):
