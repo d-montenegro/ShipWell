@@ -28,9 +28,9 @@ It accepts the following parameters:
 
 **Note**: if _zip_code_ parameter is present, _latitude_ and _longitude_ are ignored. The allowed sources to filter by are: _noaa_, _accuweather_ and _weather.com_. If filters is not specified, then all of the sources are considered.
 
-**Important**: This application uses [Google Maps API](https://developers.google.com/maps/documentation/geocoding/intro), to get longitude and latitude coordinates from a give zip code, and to validate input latitude and longitude coordinates as well. For this two work, an [API Key](https://developers.google.com/maps/documentation/geocoding/get-api-key) must be specified in project's settings files (ShipWell/ship_well/ship_well/settings.py), in the key GOOGLE_MAPS_API_KEY. However, this is not mandatory, as zip code parameter is not mandatory and coordinates validation is disabled by default. You can enable it by setting to _True_ the key ENABLE_COORDINATES_CHECKING in settings file. For any change in settings file to take place, the application must be restarted using the following code:
+**Important**: This application uses [Google Maps API](https://developers.google.com/maps/documentation/geocoding/intro), to get longitude and latitude coordinates from a give zip code, and to validate input latitude and longitude coordinates as well. For this two work, an [API Key](https://developers.google.com/maps/documentation/geocoding/get-api-key) must be specified in project's settings files (ShipWell/ship_well/ship_well/settings.py), in the key GOOGLE_MAPS_API_KEY. However, this is not mandatory, as zip code parameter is not mandatory and coordinates validation is disabled by default. You can enable it by setting to _True_ the key ENABLE_COORDINATES_CHECKING in settings file. For any change in settings file to take place, the docker image must be re-generated. It can be done with the following code:
 ```bash¡
-make build run
+make build
 ```
 ### Example
 To get the current temperature from latitude, longitude 40.714224,-73.961452, from AccuWeather, enter the following URL in your web browser:
