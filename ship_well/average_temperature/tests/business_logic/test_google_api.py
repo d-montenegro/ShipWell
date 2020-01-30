@@ -51,3 +51,23 @@ def test_valid_coordinates_are_successfully_validated(requests_mock_get):
 
     # check the request is made properly
     get.assert_called_with(GoogleApiClient.GOOGLE_MAPS_API_URL, params={'key': '1234', 'latlng': '123456.1,789.2'})
+
+
+def test_invalid_coordinates_are_successfully_validated(requests_mock_get):
+    """
+    Check invalid lat, long coordinates are reported as invalid
+    """
+    get, response = requests_mock_get
+    response.status_code = 200
+    response.json = lambda: {
+        'status':  'OK',
+        'results': []
+    }
+
+    api = GoogleApiClient(api_key='1234')
+
+    # check coordinates are successfully validated
+    assert api.check_coordinates_validity(latitude=123456.1, longitude=789.2) is False
+
+    # check the request is made properly
+    get.assert_called_with(GoogleApiClient.GOOGLE_MAPS_API_URL, params={'key': '1234', 'latlng': '123456.1,789.2'})

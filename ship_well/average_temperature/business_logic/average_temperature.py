@@ -2,10 +2,14 @@
 This module exposes a single function to get the current temperate as an average from several sources.
 It abstracts all the internals.
 """
+from concurrent import futures
 from typing import List
 from statistics import mean
 
 from .temperature_source.sources import WebAppTemperatureSource, WEATHER_SOURCE
+
+
+MAX_CONCURRENT_WORKERS = 3
 
 
 def get_average_temperature(latitude: float, longitude: float, filter_: List[str] = None) -> float:
@@ -31,10 +35,13 @@ def get_average_temperature(latitude: float, longitude: float, filter_: List[str
     else:
         desired_sources = WEATHER_SOURCE
 
-    all_weathers = [
-        WebAppTemperatureSource.from_source_name(source).get_current_temperature(latitude, longitude)
-        for source, weather_func in desired_sources.items()
-    ]
+    workers = min(MAX_CONCURRENT_WORKERS, len(desired_sources))
+    with futures.ThreadPoolExecutor(workers) as executor:
+        all_weathers = executor.map(
+            lambda source: WebAppTemperatureSource.from_source_name(source).get_current_temperature(latitude,
+                                                                                                    longitude),
+            desired_sources.keys()
+        )
 
     return mean(all_weathers)
 
