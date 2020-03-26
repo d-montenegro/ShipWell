@@ -6,10 +6,10 @@ from concurrent import futures
 from typing import List
 from statistics import mean
 
-from .temperature_source.sources import WebAppTemperatureSource, WEATHER_SOURCE
+from .temperature_source.sources import WEATHER_SOURCE
 
 
-MAX_CONCURRENT_WORKERS = 3
+MAX_CONCURRENT_WORKERS = 20
 
 
 def get_average_temperature(latitude: float, longitude: float, filter_: List[str] = None) -> float:
@@ -29,18 +29,18 @@ def get_average_temperature(latitude: float, longitude: float, filter_: List[str
     :
     """
     if filter_:
-        desired_sources = {source: func
-                           for source, func in WEATHER_SOURCE.items()
+        desired_sources = {source: source_class
+                           for source, source_class in WEATHER_SOURCE.items()
                            if source in filter_}
     else:
         desired_sources = WEATHER_SOURCE
 
+    # Fetch temperature for sources in parallel
     workers = min(MAX_CONCURRENT_WORKERS, len(desired_sources))
     with futures.ThreadPoolExecutor(workers) as executor:
         all_weathers = executor.map(
-            lambda source: WebAppTemperatureSource.from_source_name(source).get_current_temperature(latitude,
-                                                                                                    longitude),
-            desired_sources.keys()
+            lambda source_class: source_class.get_current_temperature(latitude, longitude),
+            desired_sources.values()
         )
 
     return mean(all_weathers)

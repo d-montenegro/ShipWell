@@ -42,7 +42,5 @@ Response:
 {"celsius": 12.0}
 ```
 ### Disclaimer
-Currently, the unit test suite for this project is not fully implemented. Finishing it is prioritary and must be the following task.
+Currently, the unit test suite for this project is incomplete. Finishing it is prioritary and must be the following task.
 
-### Optimization
-This project can be optimized to perform the requests to external resources concurrently. This can be achieved with low effort using asyncio. This is specially important if the number a external sources to communicate with grows.
